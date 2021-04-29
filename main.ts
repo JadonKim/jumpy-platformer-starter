@@ -1,3 +1,58 @@
+function createEnemies() {
+    for (let value5 of tiles.getTilesByType(assets.tile`tile4`)){
+        bumper = sprites.create(img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . f f f f f f . . . . . .
+            . . . f 7 2 7 7 7 2 f . . . . .
+            . . f 7 7 7 2 7 2 7 7 f . . . .
+            . . f 7 7 7 7 7 7 7 7 7 f . . .
+            . f 7 7 7 2 7 7 7 2 7 7 f . . .
+            . f 7 7 7 2 7 7 7 2 7 7 7 f . .
+            . f 7 7 7 7 7 7 7 7 7 7 7 7 f .
+            . f 7 7 7 7 2 2 2 7 7 7 7 7 f .
+            . . f 7 7 2 2 7 2 7 7 7 7 7 f .
+            . . f 7 7 2 7 7 2 2 7 7 7 7 f .
+            . . . f 7 7 7 7 7 2 2 7 7 7 f .
+            . . . . f f 7 7 7 7 7 7 7 f . .
+            . . . . . . f f f f f f f . . .
+            . . . . . . . . . . . . . . . .
+        `, SpriteKind.Bumper)
+        tiles.placeOnTile(bumper, value5)
+        tiles.setTileAt(value5, assets.tile`tile0`)
+        bumper.ay = gravity
+        if (Math.percentChance(50)){
+        bumper.vx = Math.randomRange(30, 60)
+    } else {
+        bumper.vx = Math.randomRange(-60, -30)
+    }
+    }
+    for (let value6 of tiles.getTilesByType(assets.tile`tile7`)) {
+        flier = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Flier)
+        tiles.placeOnTile(flier, value6)
+        tiles.setTileAt(value6, assets.tile`tile0`)
+        // animation.attachAnimation(flier, flierFlying)
+        // animation.attachAnimation(flier, flierIdle)
+        animation.runImageAnimation(flier, flierImgs, 50, true)
+    }
+}
 function attemptJump () {
     if (hero.isHittingTile(CollisionDirection.Bottom)) {
         hero.vy = -4 * pixelsToMeters
@@ -22,6 +77,16 @@ function intializeLevel (level: number) {
     playerStartLocation = tiles.getTilesByType(assets.tile`tile6`)[0]
     tiles.placeOnTile(hero, playerStartLocation)
     tiles.setTileAt(playerStartLocation, assets.tile`tile0`)
+    createEnemies()
+    spawnGoals()
+}
+function spawnGoals() {
+    for (let value of tiles.getTilesByType(assets.tile`tile5`)){
+        coin = sprites.create(coinImgs[0])
+        tiles.placeOnTile(coin, value)
+        animation.runImageAnimation(coin, coinImgs, 50, true)
+        tiles.setTileAt(value, assets.tile`tile0`)
+    }
 }
 function createPlayer (player2: Sprite) {
     player2.ay = gravity
@@ -59,3 +124,11 @@ game.onUpdate(function () {
         canDoubleJump = true
     }
 })
+function initializeFlierAnimations () {
+ let flierFlying = animation.createAnimation(ActionKind.Flying, 100)
+    flierFlying.addAnimationFrame(flierImgs[1])
+    flierFlying.addAnimationFrame(flierImgs[2])
+    flierFlying.addAnimationFrame(flierImgs[3])
+ let flierIdle = animation.createAnimation(ActionKind.Idle, 100)
+    flierIdle.addAnimationFrame(flierImgs[1])
+}
